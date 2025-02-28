@@ -9,13 +9,15 @@
     2.1 [Node configuration](#node_conifguration)  
     2.2 [Input](#input)  
     2.3 [Output](#output)  
-    2.4 [Handling of the data object](#handling_of_the_data_object)  
-    2.5 [Further information](#further_information)  
+    2.4 [Timeout transition](#timeout)   
+    2.5 [Handling of the data object](#handling_of_the_data_object)  
+    2.6 [Further information](#further_information)  
 3. [Example flows](#example_flows)  
 	3.1 [Minimal state machine](#minimal_state_machine)  
 	3.2 [Simple state machine with data object](#simple_state_machine_with_data_object)  
 	3.3 [State machine with feedback](#state_machine_with_feedback)  
-	3.4 [Changing the data object](#changing_the_data_object)  
+	3.4 [State machine with timeout](#state_machine_with_timeout)  
+	3.5 [Changing the data object](#changing_the_data_object)  
 4. [Development](#development)  
 5. [Hints for upgrading from earlier versions](#hints_for_upgrading)  
 
@@ -127,7 +129,15 @@ The output contains:
 - *trigger*: Contains the original message that triggerd the state change.
 
 
+<a name="timeout"></a>
 
+### Timeout transition
+
+Optionally, a state may have a transition named `timeout` which specifies a transition to be taken on timeout without receiving an input message.  The `timeout` transition has the same content and semantics as other transitions, with the addition of a `value` attribute that specifies the timeout value in milliseconds.
+
+The timeout is initiated on entering a state with a `timeout` transition, and terminated when the state is exited.  If the state transitions to itself the timeout is reset, as if the state was reentered.  When the timeout expires, the `timeout` transition is taken in the same manner as other transitions.  In this case, the output does not contain *trigger*.
+
+The timeout transition can also be triggered by an input message with topic `timeout`, like other transitions.
 
 <a name="handling_of_the_data_object"></a>
 ### Handling of the *"data"* object
@@ -257,6 +267,38 @@ This example gives a self-stopping behaviour after a defined amount of time: Tra
 **Fig. 9:** State machine with feedback
 
 
+<a name="state_machine_with_timeout"></a>
+### State machine with feedback
+
+Set finite state machine definition to:
+
+```json
+{
+  "state": {
+    "status": "IDLE"
+  },
+  "transitions": {
+    "IDLE": {
+      "run": "RUNNING"
+    },
+    "RUNNING": {
+      "timeout": { "value":15000, "status": "IDLE" },
+      "continue": "RUNNING"
+    }
+  },
+}
+```
+**Fig. 10:** State machine with timeout JSON object
+
+This example gives a self-stopping behaviour after a defined amount of time using a timeout.
+Transition *timeout* triggers the state machine after the state machine has been in *state* RUNNING for 15 seconds.  A *continue* transition will reset the timeout.
+
+![flow-with-feeback](images/flow-timeout.png)  
+[**TimeoutStateMachineFlow.json**](examples/TimeoutStateMachineFlow.json)  
+
+**Fig. 11:** State machine with timeout
+
+
 <a name="changing_the_data_object"></a>
 ### Changing the "data" object
 
@@ -268,7 +310,7 @@ Therefore see example "Simple state machine with data object" above: To be able 
 In the example the definition of the upper set injection is like follows:
 
 ![change-data-object](images/change-data-object.png)  
-**Fig. 10:** Properties of a `msg`with a JSON *data* object
+**Fig. 12:** Properties of a `msg`with a JSON *data* object
 
 As can seen this changes the present "data" object element "x" to a numerical value of '2' and adds an additional "data" object element "name" with the string "peter".
 
@@ -291,9 +333,9 @@ If one needs to have the other two output functions there is the possibility of 
 ![compatibility mode](images/flow-with-rbe.png)  
 [**CompatibleOutputsFlow.json**](examples/CompatibleOutputsFlow.json)  
 
-**Fig. 11:** Flow with `rbe` node generating compatible outputs
+**Fig. 13:** Flow with `rbe` node generating compatible outputs
 
 As an example the `rbe`node *stateChanged* may be configured like shown in Fig. 16.
 
 ![compatibility mode](images/rbe-configuration.png)  
-**Fig. 12:** Configuration of the `rbe` node
+**Fig. 14:** Configuration of the `rbe` node

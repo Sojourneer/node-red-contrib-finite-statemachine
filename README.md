@@ -1,6 +1,7 @@
 
 # Node Red State Machine
-A finite state machine (FSM) implementation for node red. Displays also a graphical representation of the state machine.  
+A finite state machine (FSM) implementation for node red which supports state timeouts.
+Displays also a graphical representation of the state machine.  
 ![node-appearance](images/node-appearance.png)
 
 ## Installation

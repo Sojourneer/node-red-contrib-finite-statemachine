@@ -1,0 +1,98 @@
+[
+    {
+        "id": "854a9f95.2f9f7",
+        "type": "tab",
+        "label": "State machine with feedback flow",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "47aa9b50.b6825c",
+        "type": "finite-state-machine",
+        "z": "854a9f95.2f9f7",
+        "name": "",
+        "fsmDefinition": "{\"state\":{\"status\":\"IDLE\",\"data\":{\"x\":5}},\"transitions\":{\"IDLE\":{\"run\":\"RUNNING\"},\"RUNNING\":{\"stop\":\"IDLE\",\"set\":\"RUNNING\"}}}",
+        "sendInitialState": false,
+        "showTransitionErrors": true,
+        "x": 590,
+        "y": 160,
+        "wires": [
+            [
+                "95e4cda8ef7f4206"
+            ]
+        ]
+    },
+    {
+        "id": "87fbee09.255fe8",
+        "type": "inject",
+        "z": "854a9f95.2f9f7",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "run",
+        "payload": "",
+        "payloadType": "str",
+        "x": 270,
+        "y": 160,
+        "wires": [
+            [
+                "47aa9b50.b6825c"
+            ]
+        ]
+    },
+    {
+        "id": "983f9b74.7bcbd8",
+        "type": "change",
+        "z": "854a9f95.2f9f7",
+        "name": "set msg.topic to continue",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "continue",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 310,
+        "y": 260,
+        "wires": [
+            [
+                "47aa9b50.b6825c"
+            ]
+        ]
+    },
+    {
+        "id": "a0a931fb.60bc4",
+        "type": "comment",
+        "z": "854a9f95.2f9f7",
+        "name": "sending topic \"continue\" will postpone the machine from timing out to IDLE",
+        "info": "",
+        "x": 390,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "95e4cda8ef7f4206",
+        "type": "debug",
+        "z": "854a9f95.2f9f7",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 890,
+        "y": 160,
+        "wires": []
+    }
+]
